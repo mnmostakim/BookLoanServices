@@ -1,0 +1,50 @@
+﻿@model BookLoansPorject.ViewModels.UserModel
+@{
+    ViewBag.Title = "Login";
+}
+
+<section class="h-80 gradient-custom-2">
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-80">
+            <div class="col-xl-10">
+                <div class="card rounded-3 text-black">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="card-body p-md-5 mx-md-4">
+                                <h3>Log in</h3>
+                                @using (Html.BeginForm())
+                                {
+                                    @Html.ValidationSummary()
+                                    <div class="form-group row mb-2">
+                                        <div class="col-12">
+                                            @Html.TextBoxFor(x => x.Username, new { @class = "form-control", placeholder = "username..." })
+                                            @Html.ValidationMessageFor(x => x.Username, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="form-group row mb-2">
+                                        <div class="col-12">
+                                            @Html.PasswordFor(x => x.Password, new { @class = "form-control", placeholder = "password..." })
+                                            @Html.ValidationMessageFor(x => x.Password, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-4 mb-2">
+                                            <div class="d-flex justify-content-start">
+                                                <button type="submit" class="btn btn-primary">Login</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-lg-end justify-content-md-start pb-4">
+                                        <p class="mb-0 me-2">Don't have an account?</p>
+                                        <a class="btn btn-outline-success" href="/Accounts/Register">Registation</a>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

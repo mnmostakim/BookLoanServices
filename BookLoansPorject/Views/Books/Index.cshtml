@@ -1,0 +1,164 @@
+﻿@model IEnumerable<BookLoansPorject.Models.Book>
+
+@using X.PagedList
+@using X.PagedList.Mvc
+@using X.PagedList.Mvc.Common
+
+@{
+    ViewBag.Title = "Index";
+}
+<div class="row">
+    <div class="col-12">
+        <h3 class="text-center">Book List</h3>
+
+        <div class="d-flex justify-content-end mb-1">
+            <a href="@Url.Action("Create", "Books")" class="btn btn-outline-primary btn-sm">Create New Book</a>
+        </div>
+
+        <table class="table table-bordered table-striped table-sm">
+            <thead class="table-success">
+                <tr>
+                    <th class="text-center"></th>
+                    <th class="text-center">Cover</th>
+                    <th class="text-center">Book Title</th>
+                    <th class="text-center">Author Name</th>
+                    <th class="text-center">Published</th>
+                    <th class="text-center">Short Description</th>
+                    <th class="text-center">Genre</th>
+                    <th class="text-center">Available ?</th>
+                    <th class="text-center">...</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var t in Model)
+                {
+                    <tr style="vertical-align:middle" id="tr_@t.BookId">
+                        <td class="text-center">
+                            <button type="button" id="show_@t.BookId" class="btn btn-link btn-sm show" data-aid="@t.BookId"><i class="bi bi-plus-square"></i></button>
+                            <button type="button" id="hide_@t.BookId" class="btn btn-link btn-sm hide" data-aid="@t.BookId" style="display:none"><i class="bi bi-dash-square"></i></button>
+                        </td>
+                        <td class="text-center"><img src="~/Pictures/@t.BookCover" class="img-thumbnail rounded" style="width:70px" /></td>
+                        <td class="text-center">@t.Title</td>
+                        <td class="text-center">@t.Author</td>
+                        <td class="text-center">@t.Published</td>
+                        <td class="text-center">@t.Description</td>
+                        <td class="text-center">@t.Genre</td>
+                        <td class="text-center">@(t.IsAvailable ? "Yes" : "No")</td>
+                        <td>
+                            <a title="Edit this item" href="@Url.Action("Edit", "Books", new {id=t.BookId})" class="btn btn-success btn-sm text-center"><i class="bi bi-pencil"></i></a>
+                            <button type="button" title="Delete this item" data-pk="@t.BookId" href="@Url.Action("Delete", "Books", new { id = t.BookId })" class="btn btn-danger btn-sm text-center del"><i class="bi bi-trash"></i></button>
+                        </td>
+                    </tr>
+                    <tr style="display:none" id="p_@t.BookId">
+                        <td></td>
+                        <td colspan="8">
+                            <h4>List of Book Borrowers</h4>
+                            <table class="table table-bordered table-sm">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="text-center">Borrower Name</th>
+                                        <th class="text-center">Borrower Address</th>
+                                        <th class="text-center">Borrower Phone</th>
+                                        <th class="text-center">Loan Date</th>
+                                        <th class="text-center">Return Date</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var l in t.BookLoans)
+                                    {
+                                        <tr>
+                                            <td class="text-center">@l.BorrowerName</td>
+                                            <td class="text-center">@l.Address</td>
+                                            <td class="text-center">@l.Phone</td>
+                                            <td class="text-center">@l.LoanDate.ToString("yyyy-MM-dd")</td>
+                                            <td class="text-center">@l.ReturnDate.ToString("yyyy-MM-dd")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div class="d-flex justify-content-end">
+                @Html.PagedListPager((IPagedList)Model, pg => Url.Action("Index", new { pg = pg }), new PagedListRenderOptions
+                {
+                    LiElementClasses = new string[] { "page-item" },
+                    PageClasses = new string[] { "page-link" }
+                })
+            </div>
+    </div>
+</div>
+<div class="modal" tabindex="-1" id="delmodal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title">Delete Book</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure to delete?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="btnyes">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section styles
+{
+    <link href="~/Content/bootstrap-icons-1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+}
+@section scripts
+{
+    <script src="~/Scripts/jquery-3.7.0.js"></script>
+    <script src="~/Scripts/bootstrap.bundle.js"></script>
+    <script>
+        $(() => {
+            $(".show").click(function () {
+                var aid = $(this).data("aid");
+                $(`#p_${aid}`).show();
+                $(`#hide_${aid}`).show();
+                $(this).hide();
+            });
+            $(".hide").click(function () {
+                var aid = $(this).data("aid");
+                $(`#p_${aid}`).hide();
+                $(`#show_${aid}`).show();
+                $(this).hide();
+            })
+        });
+    </script>
+
+    <script>
+        var delModal;
+        var delId = -1;
+        $(() => {
+            delModal = new bootstrap.Modal(document.getElementById('delmodal'));
+            $(".del").click(function () {
+                delModal.show();
+                delId = $(this).data("pk");
+                console.log(delId);
+            });
+            $("#btnyes").click(() => {
+                $.ajax({
+                    type: "post",
+                    url: "/Books/Delete/" + delId,
+                    dataType: "json",
+                    success: (r) => {
+                        if (r.success == true) {
+                            $("#tr_" + delId).remove();
+                            $("#tr_l" + delId).remove();
+                        }
+                    }
+                });
+                delModal.hide();
+            });
+        })
+    </script>
+}
+

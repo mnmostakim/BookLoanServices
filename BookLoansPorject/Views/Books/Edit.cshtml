@@ -1,0 +1,103 @@
+﻿@model BookLoansPorject.ViewModels.BookEditModel
+@{
+    ViewBag.Title = "Edit";
+}
+<div class="row">
+    <div class="col-12">
+        <div class="alert alert-success alert-dismissible fade show" role="alert" id="alert" style="display:none">
+            <strong>Success!</strong> Data Saved Successfully.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div id="spinner" style="display:none">
+            <div class="d-flex align-items-center">
+                <strong>Loading...</strong>
+                <div class="spinner-border ms-auto" role="status" aria-hidden="true"></div>
+            </div>
+        </div>
+        @using (Ajax.BeginForm("Edit", "Books", new { }, new AjaxOptions
+        {
+            HttpMethod = "post",
+            InsertionMode = InsertionMode.Replace,
+            UpdateTargetId = "form-div",
+            OnSuccess = "onSuccess",
+            OnFailure = "onFailure",
+            LoadingElementId = "spinner"
+        },
+            new { id = "frm", enctype = "multipart/form-data" }))
+        {
+            <div id="form-div">
+                @Html.Partial("_EditPartial", Model, new ViewDataDictionary(this.ViewData) { { "Act", "" } })
+            </div>
+        }
+    </div>
+
+</div>
+
+@section styles
+{
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+}
+@section scripts
+{
+    <script src="~/Scripts/jquery-3.7.0.js"></script>
+    <script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
+
+    <script>
+        $(() => {
+
+
+            $(document).on("change", "#Picture", function () {
+                console.log(this);
+                var file = this.files[0];
+                $("#preview").attr("src", URL.createObjectURL(file));
+            });
+            $(document).on("click", "button.add", function () {
+                var action = $("#frm").attr('action');
+                var x = action.indexOf("?");
+                if (x >= 0) action = action.substring(0, x);
+                $("#frm").attr('action', action + "?act=add");
+            });
+            $(document).on("click", "button.del", function () {
+                var index = $(this).data("index")
+                var action = $("#frm").attr('action');
+                var x = action.indexOf("?");
+                if (x >= 0) action = action.substring(0, x);
+                $("#frm").attr('action', action + "?act=remove_" + index);
+            });
+            $(document).on("click", "button.update", function () {
+                var index = $(this).data("index")
+                var action = $("#frm").attr('action');
+                var x = action.indexOf("?");
+                if (x >= 0) action = action.substring(0, x);
+                $("#frm").attr('action', action + "?act=update");
+            });
+        });
+        function onSuccess() {
+            console.log($("#server-action").val());
+            if ($("#server-action").val() == "update") {
+                $("#alert").show();
+                $("input[type=text]").val('');
+                $("select").val('');
+            }
+        }
+        function onFailure() {
+
+        }
+        function addDatePicker() {
+            $(".date").datepicker({
+                format: "yyyy-mm-dd"
+            });
+
+        }
+        function formatDate(dt) {
+            var d = new Date(dt);
+            var date = [
+                d.getFullYear(),
+                ('0' + (d.getMonth() + 1)).slice(-2),
+                ('0' + d.getDate()).slice(-2)
+            ].join('-');
+            return date;
+        }
+    </script>
+}

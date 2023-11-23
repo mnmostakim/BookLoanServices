@@ -1,0 +1,121 @@
+﻿@model BookLoansPorject.ViewModels.BookEditModel
+
+<h3>Edit Book</h3>
+<input type="hidden" id="server-action" value="@ViewData["Act"]" />
+@Html.HiddenFor(x => x.BookId)
+<div class="form-group row mb-1">
+    @Html.LabelFor(x => x.Title, new { @class = "col-form-label col-form-label-sm col-2" })
+    <div class="col-6">
+        @Html.TextBoxFor(x => x.Title, new { @class = "form-control form-control-sm" })
+        @Html.ValidationMessageFor(x => x.Title, "", new { @class = "text-danger", style = "font-size:x-small" })
+    </div>
+</div>
+<div class="form-group row mb-1">
+    @Html.LabelFor(x => x.Author, new { @class = "col-form-label col-form-label-sm col-2" })
+    <div class="col-6">
+        @Html.TextBoxFor(x => x.Author, new { @class = "form-control form-control-sm" })
+        @Html.ValidationMessageFor(x => x.Author, "", new { @class = "text-danger", style = "font-size:x-small" })
+    </div>
+</div>
+<div class="form-group row mb-1">
+    @Html.LabelFor(x => x.Published, new { @class = "col-form-label col-form-label-sm col-2" })
+    <div class="col-6">
+        @Html.TextBoxFor(x => x.Published, new { @class = "form-control form-control-sm" })
+        @Html.ValidationMessageFor(x => x.Published, "", new { @class = "text-danger", style = "font-size:x-small" })
+    </div>
+</div>
+<div class="form-group row mb-1">
+    @Html.LabelFor(x => x.Description, new { @class = "col-form-label col-form-label-sm col-2" })
+    <div class="col-6">
+        @Html.TextBoxFor(x => x.Description, new { @class = "form-control form-control-sm" })
+        @Html.ValidationMessageFor(x => x.Description, "", new { @class = "text-danger", style = "font-size:x-small" })
+    </div>
+</div>
+<div class="form-group row mb-1">
+    @Html.LabelFor(x => x.Genre, new { @class = "col-form-label col-form-label-sm col-2" })
+    <div class="col-6">
+        @Html.EnumDropDownListFor(x => x.Genre, new { @class = "form-select form-select-sm" })
+        @Html.ValidationMessageFor(x => x.Genre, "", new { @class = "text-danger", style = "font-size:x-small" })
+    </div>
+</div>
+<div class="form-group row mb-1">
+    @Html.LabelFor(x => x.BookCover, new { @class = "col-form-label col-form-label-sm col-2" })
+    <div class="col-6">
+        @Html.TextBoxFor(x => x.BookCover, new { @class = "form-control form-control-sm", type = "file" })
+        @Html.ValidationMessageFor(x => x.BookCover, "", new { @class = "text-danger", style = "font-size:x-small" })
+    </div>
+</div>
+<div class="form-group row mb-1">
+    <div class="form-check offset-2">
+        @Html.CheckBoxFor(x => x.IsAvailable)
+        <label class="form-check-label" for="flexCheckDefault">
+            Is This Book Available?
+        </label>
+    </div>
+</div>
+<div class="form-group row mb-1">
+    @Html.LabelFor(x => x.BookCover, new { @class = "col-form-label col-2 py-2" })
+    <div class="col-6 py-2">
+        @Html.TextBoxFor(x => x.BookCover, new { @class = "form-control form-control-sm", type = "file" })
+        @Html.ValidationMessageFor(x => x.BookCover, "", new { @class = "text-danger", style = "font-size:small" })
+    </div>
+    <div class="col-2">
+        <img src="~/Pictures/@ViewData["CurrentPic"]" class="img-thumbnail " id="preview" style="width:100px" />
+    </div>
+</div>
+
+
+
+<div class="col-12">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Borrower Name</th>
+                <th>Borrower Address</th>
+                <th>Borrower Phone</th>
+                <th>Loan Date</th>
+                <th>Return Date</th>
+                <th>
+                    <button type="submit" class="btn btn-secondary btn-sm add" name="act" value="add" formnovalidate><i class="bi bi-plus"></i></button>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (var i = 0; i < Model.BookLoans.Count; i++)
+            {
+                <tr>
+                    <td>
+                        @Html.TextBoxFor(x => Model.BookLoans[i].BorrowerName, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(x => Model.BookLoans[i].BorrowerName, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(x => Model.BookLoans[i].Address, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(x => Model.BookLoans[i].Address, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(x => Model.BookLoans[i].Phone, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(x => Model.BookLoans[i].Phone, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(x => Model.BookLoans[i].LoanDate, new { @class = "form-control date" })
+                        @Html.ValidationMessageFor(x => Model.BookLoans[i].LoanDate, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(x => Model.BookLoans[i].ReturnDate, new { @class = "form-control date" })
+                        @Html.ValidationMessageFor(x => Model.BookLoans[i].ReturnDate, "", new { @class = "text-danger" })
+                    </td>
+                    <th>
+                        <button type="submit" class="btn btn-secondary btn-sm" name="act" value="remove_@i" formnovalidate><i class="bi bi-trash"></i></button>
+                    </th>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<div class="row mb-1">
+    <div class="col-10 offset-2">
+        <div class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-primary update" name="act" value="update">Save file to Database</button>
+        </div>
+    </div>
+</div>
